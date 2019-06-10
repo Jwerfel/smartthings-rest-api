@@ -51,6 +51,8 @@ mappings {
 preferences {
   section() {
     input "devices", "capability.actuator", title: "Devices", multiple: true
+    input "sensors", "capability.sensor", title: "Sensors", multiple: true
+    input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true
   }
 }
 
@@ -71,6 +73,26 @@ def initialize() {
 def listDevices() {
   def resp = []
   devices.each {
+    resp << [
+        id: it.id,
+        label: it.label,
+        manufacturerName: it.manufacturerName,
+        modelName: it.modelName,
+        name: it.name,
+        displayName: it.displayName
+    ]
+  }
+  sensors.each {
+    resp << [
+        id: it.id,
+        label: it.label,
+        manufacturerName: it.manufacturerName,
+        modelName: it.modelName,
+        name: it.name,
+        displayName: it.displayName
+    ]
+  }
+    temperatures.each {
     resp << [
         id: it.id,
         label: it.label,
@@ -150,5 +172,10 @@ def deviceCommand() {
 }
 
 def getDeviceById(id) {
-  return devices.find { it.id == id }
+  def device = devices.find { it.id == id }
+  if(device == null)
+  	device = sensors.find{it.id == id}
+  if(device == null)
+  	device = temperatures.find{it.id == id}
+  return device;
 }
