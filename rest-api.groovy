@@ -16,7 +16,7 @@
 definition(
     name: "REST API",
     namespace: "bradyholt.smartthingsrest",
-    author: "Brady Holt",
+    author: "Julian Werfel",
     description: "SmartThings REST API",
     category: "SmartThings Labs",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
@@ -53,6 +53,7 @@ preferences {
     input "devices", "capability.actuator", title: "Devices", multiple: true
     input "sensors", "capability.sensor", title: "Sensors", multiple: true
     input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true
+    input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true
   }
 }
 
@@ -93,6 +94,16 @@ def listDevices() {
     ]
   }
     temperatures.each {
+    resp << [
+        id: it.id,
+        label: it.label,
+        manufacturerName: it.manufacturerName,
+        modelName: it.modelName,
+        name: it.name,
+        displayName: it.displayName
+    ]
+  }
+  presenceSensor.each {
     resp << [
         id: it.id,
         label: it.label,
@@ -177,5 +188,7 @@ def getDeviceById(id) {
   	device = sensors.find{it.id == id}
   if(device == null)
   	device = temperatures.find{it.id == id}
+  if(device == null)
+    device = presenceSensor.find{it.id == id}
   return device;
 }
