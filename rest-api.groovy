@@ -41,6 +41,11 @@ mappings {
         GET: "deviceGetAttributeValue"
     ]
   }
+  path("/devices/attribute/:name") {
+    action: [
+        GET: "deviceGetAttributeValueForDevices"
+    ]
+  }
   path("/device/:id/command/:name") {
     action: [
         POST: "deviceCommand"
@@ -146,6 +151,35 @@ def deviceDetails() {
       supportedAttributes: supportedAttributes,
       supportedCommands: supportedCommands
   ]
+}
+
+def deviceGetAttributeValueForDevices() {
+  def resp = []
+
+  def args = params.arg
+  //log.info("Args: " + args);
+    
+  def deviceIds = args.split(',');
+  //log.info("deviceIds: " + deviceIds);
+  def name = params.name
+  //log.info("ParamName: " + name);
+
+  deviceIds.each {
+    def device = getDeviceById(it);
+    if(device != null) {
+        def value = device.currentValue(name);
+        resp << [
+          id: it,
+          value: value
+        ]
+    }
+    else {
+    	log.warn("Could not find device " + it);
+    }
+
+  }
+
+  return resp;
 }
 
 def deviceGetAttributeValue() {
