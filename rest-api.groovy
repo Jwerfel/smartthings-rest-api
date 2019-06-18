@@ -41,6 +41,11 @@ mappings {
         GET: "deviceGetAttributeValue"
     ]
   }
+  path("/device/:id/attributes") {
+    action: [
+      GET: "deviceGetAttributes"
+    ]
+  }
   path("/devices/attribute/:name") {
     action: [
         GET: "deviceGetAttributeValueForDevices"
@@ -189,6 +194,21 @@ def deviceGetAttributeValue() {
   return [
       value: value
   ]
+}
+
+def deviceGetAttributes() {
+  def device = getDeviceById(params.id);
+  def args = params.arg;
+  def attributes = args.split(',');
+  def resp = [];
+  attributes.each {
+    def value = device.currentValue(it);
+    resp << [
+      name: it,
+      value: value
+    ]
+  }
+  return resp;
 }
 
 def deviceCommand() {
