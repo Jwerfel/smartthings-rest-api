@@ -1,7 +1,7 @@
 /**
  *  SmartThings REST API
  *
- *  Copyright 2017 Brady Holt
+ *  Copyright 2019 Julian Werfel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -15,7 +15,7 @@
  */
 definition(
     name: "REST API",
-    namespace: "bradyholt.smartthingsrest",
+    namespace: "jwerfel.smartthingsrest",
     author: "Julian Werfel",
     description: "SmartThings REST API",
     category: "SmartThings Labs",
