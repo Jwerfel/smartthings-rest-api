@@ -51,9 +51,24 @@ mappings {
         GET: "deviceGetAttributeValueForDevices"
     ]
   }
+  path("/devices/attributes") {
+    action: [
+      GET: "devicesGetAttributes"
+    ]
+  }
   path("/device/:id/command/:name") {
     action: [
         POST: "deviceCommand"
+    ]
+  }
+  path("/device/status/:id") {
+  	action: [
+    	GET: "deviceStatus"
+    ]
+  }
+  path("/devices/statuses") {
+  	action: [
+    	GET: "devicesStatuses"
     ]
   }
 }
@@ -158,6 +173,32 @@ def deviceDetails() {
   ]
 }
 
+def devicesGetAttributes() {
+  def resp = [];
+  def devicesString = params.devices;
+  def attributesString = params.attributes;
+  def deviceIds = devicesString.split(',');
+  def attributeNames = attributesString.split(',');
+
+  deviceIds.each {d ->
+    def device = getDeviceById(d);
+    if(device != null) {
+      attributeNames.each {a -> 
+        def value = device.currentValue(a);
+        resp << [
+          id: d,
+          name: a,
+          value: value
+        ]
+      }
+    }
+    else {
+      log.warn("Could not find device " + d);
+    }
+  }
+  return resp;
+}
+
 def deviceGetAttributeValueForDevices() {
   def resp = []
 
@@ -208,6 +249,38 @@ def deviceGetAttributes() {
       value: value
     ]
   }
+  return resp;
+}
+
+def deviceStatus() {
+	def device = getDeviceById(params.id)
+    //log.warn("Getting status for device: " + device);
+     def status = device.getStatus();
+     //log.warn("Status for device is: " + status);
+     return [
+     	value: status
+     ]
+}
+
+def devicesStatuses() {
+  def resp = []
+  def args = params.devices
+  def deviceIds = args.split(',');
+  deviceIds.each {
+    def device = getDeviceById(it);
+    if(device != null) {
+        def value = device.getStatus();
+        resp << [
+          id: it,
+          value: value
+        ]
+    }
+    else {
+    	log.warn("Could not find device " + it);
+    }
+
+  }
+
   return resp;
 }
 
