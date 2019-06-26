@@ -288,18 +288,32 @@ def deviceCommand() {
   def device = getDeviceById(params.id)
   def name = params.name
   def args = params.arg
+  def isIntParam = params.isInt;
+  def isInt = false;
+  if("true".equalsIgnoreCase(isIntParam)) {
+  	isInt = true;
+  }
   if (args == null) {
     args = []
   } else if (args instanceof String) {
     args = [args]
   }
-  log.debug "device command: ${name} ${args}"
+  log.debug "device command: ${name} ${args}"  
   switch(args.size) {
     case 0:
       device."$name"()
       break;
     case 1:
-      device."$name"(args[0])
+      //log.debug("Arg0 value: " + args[0]);
+      def val = args[0];
+      if(isInt) {
+      	int num = args[0] as Integer
+      	device."$name"(num)
+      }
+      else {
+      	device."$name"(args[0])
+      }
+      //device.setCoolingSetpoint(args[0]);
       break;
     case 2:
       device."$name"(args[0], args[1])
