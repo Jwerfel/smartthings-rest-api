@@ -183,12 +183,14 @@ def devicesGetAttributes() {
   deviceIds.each {d ->
     def device = getDeviceById(d);
     if(device != null) {
+      def deviceStatus = device.getStatus();
       attributeNames.each {a -> 
-        def value = device.currentValue(a);
+        def value = device.currentValue(a);        
         resp << [
           id: d,
           name: a,
-          value: value
+          value: value,
+          deviceStatus: deviceStatus
         ]
       }
     }
