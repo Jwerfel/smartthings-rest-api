@@ -71,6 +71,11 @@ mappings {
     	GET: "devicesStatuses"
     ]
   }
+  path("/device/events/:id") {
+    action [
+      GET: "deviceEvents"
+    ]
+  }
 }
 
 preferences {
@@ -323,6 +328,26 @@ def deviceCommand() {
     default:
       throw new Exception("Unhandled number of args")
   }
+}
+
+def deviceEvents() {
+  def device = getDeviceById(params.id)
+  def events = device.events();
+  def resp = [];
+  events.each {
+    resp << [
+      stringValue: it.stringValue,
+      source: it.source,
+      name: it.name,
+      descriptionText: it.descriptionText,
+      date: it.date,
+      description: it.description,
+      value: it.value,
+      linkText: it.linkText
+    ]
+  }
+
+  return resp;
 }
 
 def getDeviceById(id) {
