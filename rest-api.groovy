@@ -71,9 +71,14 @@ mappings {
     	GET: "devicesStatuses"
     ]
   }
-  path("/device/events/:id") {
-    action [
+	path("/device/events/:id") {
+    action: [
       GET: "deviceEvents"
+    ]
+  }
+  path("/test") {
+  	action: [
+      GET: "test"
     ]
   }
 }
@@ -331,8 +336,36 @@ def deviceCommand() {
 }
 
 def deviceEvents() {
-  def device = getDeviceById(params.id)
-  def events = device.events();
+	def numEvents = 20
+    
+  def lastEvent = params.lastEvent;
+  def device = getDeviceById(params.id);
+  
+  def events = null;
+  
+  if(lastEvent == null) {
+  	events = device.events();
+  }
+  else {
+  	// date: "2019-07-08T14:20:06Z"
+  	//def dateFormat = new java.util.SimpleDateFormat("yyyy-mm-ddThh:mm:ssZ");
+    log.debug("Parsing date: " + lastEvent);
+  	//def date = Date.parse("yyyy-mm-ddThh:mm:ssZ", lastEvent);// dateFormat.parse(dateFormat);
+    def date = Date.parse("yyyy-MM-dd HH:mm:ss z", lastEvent);// dateFormat.parse(dateFormat);
+    log.debug("Parsed date is: "+ date);
+    def endDate = new Date() - 10; // only 7 days should exist, 
+    log.debug("Searching for events between [" + endDate + "] and [" + date + "]");
+    events = device.eventsBetween(endDate, date);
+    //events = device.eventsBetween(date, endDate, [max: 5]);
+    log.debug("Found [" + events.size() +"] in range");
+  }
+  
+  if(events.size() > 0) {
+  	def last = events.size() - 1;    
+  	log.debug("Event[" + last + "].date = " + events.get(last).date);
+  }
+  //log.debug("Got [" + events.size() + "] events");
+  
   def resp = [];
   events.each {
     resp << [
@@ -342,12 +375,33 @@ def deviceEvents() {
       descriptionText: it.descriptionText,
       date: it.date,
       description: it.description,
+      //jsonValue: it.jsonValue,
       value: it.value,
       linkText: it.linkText
     ]
   }
 
   return resp;
+}
+
+def test() {
+
+/*
+
+	if(location != null)
+    	console.log("Location not null");
+    def helloHome = location.helloHome;
+    if(helloHome != null)
+    	console.log("Hello Home: " + helloHome);
+*/
+	def actions = location.helloHome?.getPhrases()*.label;
+    //console.log("Actions: " + actions);
+    //console.log("Got [" + actions.size() + "] actions");
+    
+    actions.each {
+    	console.log("Action: " + it);
+    }
+    return actions;
 }
 
 def getDeviceById(id) {
