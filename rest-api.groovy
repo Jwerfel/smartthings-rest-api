@@ -81,6 +81,16 @@ mappings {
       GET: "test"
     ]
   }
+  path("/routines") {
+  	action: [
+      GET: "getRoutines"
+    ]
+  }
+  path("/routine") {
+    action: [
+      POST: "executeRoutine"
+    ]
+  }
 }
 
 preferences {
@@ -189,12 +199,28 @@ def devicesGetAttributes() {
   def attributesString = params.attributes;
   def deviceIds = devicesString.split(',');
   def attributeNames = attributesString.split(',');
+  def lastEvent = false;
+  def lastEventParam = params.lastEvent;
+  log.info("LogEventParam: "+ logEventParam);
+  if(lastEventParam == 'true')
+  	lastEvent = true;
 
   deviceIds.each {d ->
     def device = getDeviceById(d);
     if(device != null) {
       def deviceStatus = device.getStatus();
       def lastActivity = device.getLastActivity();
+      def mostRecentEvent = null;
+      def mostRecentEventDate = null;
+      if(lastEvent == true) {
+      	def deviceEvents = device.events(max: 1);
+        if(deviceEvents.size() > 0) {
+        	//mostRecentEvent = deviceEvents[0].name + " - " +deviceEvents[0].stringValue;
+            mostRecentEvent = deviceEvents[0].stringValue;
+            mostRecentEventDate = deviceEvents[0].date;
+        }
+      }
+      	
       attributeNames.each {a -> 
         def value = device.currentValue(a);        
         resp << [
@@ -202,7 +228,9 @@ def devicesGetAttributes() {
           name: a,
           value: value,
           deviceStatus: deviceStatus,
-          lastActivity: lastActivity
+          lastActivity: lastActivity,
+          mostRecentEvent: mostRecentEvent,
+          mostRecentEventDate: mostRecentEventDate
         ]
       }
     }
@@ -386,6 +414,18 @@ def deviceEvents() {
   return resp;
 }
 
+def getRoutines() {
+	def actions = location.helloHome?.getPhrases()*.label;
+    return actions;
+}
+
+def executeRoutine(){
+	def name = params.name;
+    log.info("Executing routine: " + name);	
+    location.helloHome?.execute(name)
+}
+
+
 def test() {
 
 /*
@@ -400,9 +440,10 @@ def test() {
     //console.log("Actions: " + actions);
     //console.log("Got [" + actions.size() + "] actions");
     
+    /*
     actions.each {
     	console.log("Action: " + it);
-    }
+    }*/
     return actions;
 }
 
