@@ -56,3 +56,22 @@ curl -H "Authorization: Bearer xyz123" -X POST \
 curl -H "Authorization: Bearer xyz123" -X POST \
   https://graph1.smartthings.com/api/smartapps/installations/123987/device/123/command/setLevel?arg=50
 ```
+
+#### List Modes
+```
+curl -v -H "Authorization: Bearer xyz123" \
+  https://graph1.smartthings.com/api/smartapps/installations/123987/modes
+```
+
+#### Get current Modes
+```
+curl -v -H "Authorization: Bearer xyz123" \
+  https://graph1.smartthings.com/api/smartapps/installations/123987/mode
+```
+
+#### Change current Mode
+```
+curl -H "Authorization: Bearer xyz123" -X POST \
+  https://graph1.smartthings.com/api/smartapps/installations/123987/mode \
+  --data '{"id": "123987", "locationId": "123987", "name": "Test"}'
+```

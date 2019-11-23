@@ -91,6 +91,17 @@ mappings {
       POST: "executeRoutine"
     ]
   }
+  path("/modes") {
+    action: [
+      GET: "getModes"
+    ]
+  }
+  path("/mode") {
+    action: [
+      GET: "getCurrentMode",
+      POST: "setCurrentMode"
+    ]
+  }
 }
 
 preferences {
@@ -423,6 +434,28 @@ def executeRoutine(){
 	def name = params.name;
     log.info("Executing routine: " + name);	
     location.helloHome?.execute(name)
+}
+
+def getModes() {
+  return location.modes
+}
+
+def getCurrentMode() {
+  return getModes()?.find {it.name == location.mode}
+}
+
+def setCurrentMode() {
+  def mode = request?.JSON;
+    
+    log.info("Executing setModes mode: " + mode);
+    
+    if (mode && mode.id) {
+      def found = getModes()?.find {it.name == location.mode};
+        if (found) {
+        log.info("setModes found: " + found);
+          setLocationMode(found);
+        }
+    }
 }
 
 
