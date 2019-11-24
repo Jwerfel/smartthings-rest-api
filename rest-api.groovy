@@ -106,10 +106,10 @@ mappings {
 
 preferences {
   section() {
-    input "devices", "capability.actuator", title: "Devices", multiple: true
-    input "sensors", "capability.sensor", title: "Sensors", multiple: true
-    input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true
-    input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true
+    input "devices", "capability.actuator", title: "Devices", multiple: true, required: false
+    input "sensors", "capability.sensor", title: "Sensors", multiple: true, required: false
+    input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true, required: false
+    input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true, required: false
   }
 }
 
