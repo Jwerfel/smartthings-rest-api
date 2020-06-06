@@ -110,6 +110,7 @@ preferences {
     input "sensors", "capability.sensor", title: "Sensors", multiple: true, required: false
     input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true, required: false
     input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true, required: false
+    input "switches", "capability.switch", title: "Switches", multiple: true, required: false
   }
 }
 
@@ -160,6 +161,16 @@ def listDevices() {
     ]
   }
   presenceSensor.each {
+    resp << [
+        id: it.id,
+        label: it.label,
+        manufacturerName: it.manufacturerName,
+        modelName: it.modelName,
+        name: it.name,
+        displayName: it.displayName
+    ]
+  }
+  switches.each{
     resp << [
         id: it.id,
         label: it.label,
@@ -488,5 +499,7 @@ def getDeviceById(id) {
   	device = temperatures.find{it.id == id}
   if(device == null)
     device = presenceSensor.find{it.id == id}
+  if(device == null)
+    device = switches.find{it.id == id}
   return device;
 }
