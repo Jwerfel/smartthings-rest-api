@@ -91,15 +91,26 @@ mappings {
       POST: "executeRoutine"
     ]
   }
+  path("/modes") {
+    action: [
+      GET: "getModes"
+    ]
+  }
+  path("/mode") {
+    action: [
+      GET: "getCurrentMode",
+      POST: "setCurrentMode"
+    ]
+  }
 }
 
 preferences {
   section() {
-    input "devices", "capability.actuator", title: "Devices", multiple: true
-    input "sensors", "capability.sensor", title: "Sensors", multiple: true
-    input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true
-    input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true
-    input "switches", "capability.switch", title: "Switches", multiple: true
+    input "devices", "capability.actuator", title: "Devices", multiple: true, required: false
+    input "sensors", "capability.sensor", title: "Sensors", multiple: true, required: false
+    input "temperatures", "capability.temperatureMeasurement", title: "Temperatures", multiple: true, required: false
+    input "presenceSensor", "capability.presenceSensor", title: "Presence", multiple: true, required: false
+    input "switches", "capability.switch", title: "Switches", multiple: true, required: false
   }
 }
 
@@ -434,6 +445,28 @@ def executeRoutine(){
 	def name = params.name;
     log.info("Executing routine: " + name);	
     location.helloHome?.execute(name)
+}
+
+def getModes() {
+  return location.modes
+}
+
+def getCurrentMode() {
+  return getModes()?.find {it.name == location.mode}
+}
+
+def setCurrentMode() {
+  def mode = request?.JSON;
+    
+    log.info("Executing setModes mode: " + mode);
+    
+    if (mode && mode.id) {
+      def found = getModes()?.find {it.name == location.mode};
+        if (found) {
+        log.info("setModes found: " + found);
+          setLocationMode(found);
+        }
+    }
 }
 
 
